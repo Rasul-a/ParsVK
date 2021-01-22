@@ -10,5 +10,6 @@ namespace ParsVK.Services
         string AccessToken { get; }
         Task GetTokenAsync(string code);
         Task<string> GetUsersAsync(string Id);
+        Task<string> GetWallAsync(string ownerId);
     }
 }
