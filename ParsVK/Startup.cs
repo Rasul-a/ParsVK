@@ -28,10 +28,12 @@ namespace ParsVK
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+                ;
           //  string con = Configuration.GetConnectionString("Default");
             services.AddDbContext<AppDBContext>(opt => opt.UseSqlServer(Configuration.GetConnectionString("Default")));
             services.AddSingleton<IVkApiService, VkApiService>();
             services.AddScoped<IProfileRepository, ProfileRepository>();
+            services.AddScoped<IRepository<LikeUser>, LikeUserRepository>();
             services.AddHttpClient();
         }
 

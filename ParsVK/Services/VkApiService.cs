@@ -13,7 +13,7 @@ namespace ParsVK.Services
 {
     public class VkApiService : IVkApiService
     {
-        private string accessToken = "8bb8d8d28eadd7bff2aa8459ce40d5a1ad8ef0531aa0af32254a0d21440b64fb08fb3b33db1e19526a985";
+        private string accessToken = "9a7a5108ef735365cf388f61aa0dbb8933c4394f53b1b85670df8f87f621e3b9974235c693ba5276df98a";
         // private HttpContext _context;
         //private HttpClient _client = new HttpClient();
         private IConfiguration _configuration;
@@ -43,7 +43,12 @@ namespace ParsVK.Services
 
         public async Task<string> GetWallAsync(string ownerId)
         {
-            return await GetAsync($"https://api.vk.com/method/wall.get?v=5.126&access_token={accessToken}&count=100&owner_id={ownerId}");
+            return await GetAsync($"https://api.vk.com/method/wall.get?v=5.126&access_token={accessToken}&count=10&owner_id={ownerId}");
+        }
+
+        public async Task<string> GetLikesAsync(string ownerId, string itemId, string type)
+        {
+            return await GetAsync($"https://api.vk.com/method/likes.getList?v=5.126&access_token={accessToken}&count=5&owner_id={ownerId}&item_id={itemId}&type={type}");
         }
 
         private async Task<string> GetAsync(string url)

@@ -22,6 +22,18 @@ namespace ParsVK.Repositories
             return profile;
         }
 
+        public async Task<Profile> Delete(string id)
+        {
+            var profile = await _ctx.Profiles.FirstOrDefaultAsync(p => p.Id == id);
+            if (profile != null)
+            {
+                _ctx.Profiles.Remove(profile);
+                await _ctx.SaveChangesAsync();
+            }
+                
+            return profile;
+        }
+
         public async Task<List<Profile>> GetAllAsync()
         {
             return await _ctx.Profiles.ToListAsync();

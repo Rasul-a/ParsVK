@@ -11,5 +11,6 @@ namespace ParsVK.Services
         Task GetTokenAsync(string code);
         Task<string> GetUsersAsync(string Id);
         Task<string> GetWallAsync(string ownerId);
+        Task<string> GetLikesAsync(string ownerId, string itemId, string type);
     }
 }

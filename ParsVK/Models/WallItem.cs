@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿
+using Newtonsoft.Json;
 
 namespace ParsVK.Models
 {
     public class WallItem
     {
-        public int Id { get; set; }
+        public string Id { get; set; }
         public int CommentsCount { get; set; }
         public int LikesCount { get; set; }
         public string Text { get; set; }
@@ -15,5 +13,11 @@ namespace ParsVK.Models
         public string HistoryId { get; set; }
         public string Url { get; set; }
         public string Type { get; set; }
+
+        public string ProfileId{ get; set; }
+        [JsonIgnore]
+        public Profile Profile { get; set; }
+
+        
     }
 }

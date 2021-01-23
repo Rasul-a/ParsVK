@@ -14,5 +14,9 @@ namespace ParsVK.Models
         }
 
         public DbSet<Profile> Profiles { get; set; }
+        public DbSet<WallItem> WallItems { get; set; }
+        public DbSet<LikeUser> LikeUsers { get; set; }
+
+
     }
 }
