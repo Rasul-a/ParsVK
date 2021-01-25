@@ -24,6 +24,7 @@ export class HomeComponent implements OnInit {
   showLikeUsers: boolean=false;
   sortArr: any;
   error: string = null;
+  loadProfile: boolean;
 
   ngOnInit() : void{
     this.getAll()
@@ -67,7 +68,13 @@ export class HomeComponent implements OnInit {
   }
 
   getDetails(id: any){
-    this.profileService.getDetails(id).subscribe((data: ProfileResponse)=>this.profile=data);
+    this.loadProfile=true;
+    this.profileService.getDetails(id).subscribe(
+      (data: ProfileResponse)=>
+      {
+        this.profile=data;
+        this.loadProfile=false;
+      });
 
   }
   deleteProfile(id: any){

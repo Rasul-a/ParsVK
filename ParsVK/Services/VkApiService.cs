@@ -59,9 +59,10 @@ namespace ParsVK.Services
             return await GetAsync($"https://api.vk.com/method/utils.resolveScreenName?v=5.126&access_token={accessToken}&screen_name={name}");
         }
 
-        public async Task<string> GetLikeUsersAsync(string ownerId, string itemId, string type)
+        public async Task<string> GetLikeUsersAsync(string ownerId, string itemIds, string type)
         {
-            string code = $"return API.users.get({{'fields':'photo_100','user_ids': API.likes.getList({{'type':'{type}','owner_id':'{ownerId}','item_id':'{itemId}'}}).items}});";
+            string code = $"var items=[{itemIds}]; var i =0; var res=[]; while (i < items.length){{res = res %2B API.users.get({{'fields':'photo_100', 'user_ids': API.likes.getList({{ 'type':'{type}','owner_id':'{ownerId}','item_id':items[i],'count':'300'}}).items}});i = i %2B 1;}}; return res; ";
+            //string code = $"return API.users.get({{'fields':'photo_100','user_ids': API.likes.getList({{'type':'{type}','owner_id':'{ownerId}','item_id':'{itemId}','count':'1000'}}).items}});";
             return await GetAsync($"https://api.vk.com/method/execute?v=5.126&access_token={accessToken}&code={code}");
         }
 

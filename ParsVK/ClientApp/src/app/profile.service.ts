@@ -15,7 +15,7 @@ export class ProfileService {
   }
 
   parseProfile(link: string){
-    return this.http.post(this.url,link );
+    return this.http.get(this.url+"ParseProfile?link="+link );
   }
 
   getDetails(id: any){

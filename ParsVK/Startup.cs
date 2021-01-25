@@ -33,7 +33,6 @@ namespace ParsVK
             {
                 configuration.RootPath = "ClientApp/dist";
             });
-          //  string con = Configuration.GetConnectionString("Default");
             services.AddDbContext<AppDBContext>(opt => opt.UseSqlServer(Configuration.GetConnectionString("Default")));
             services.AddSingleton<IVkApiService, VkApiService>();
             services.AddScoped<ParseVkService>();

@@ -22,14 +22,16 @@
     <div class="content">
         <div class="allprofiles">
           <div  class="profile" *ngFor="let item of allProfiles">
-            
             <img (click)="getDetails(item?.id)" src="{{item?.photoUrl}}" width="32px" alt="" srcset="">
             {{item?.lastName}} {{item?.firstName}}
             <button (click)="deleteProfile(item?.id)" class="btn btn-danger btn-sm"><i class='fa fa-trash'></i></button>
             
           </div>
         </div>
-      <div *ngIf="profile!=null" class="details">
+        <div *ngIf="loadProfile" class="spinner-border" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+      <div *ngIf="profile!=null && !loadProfile" class="details">
         <div class="head">
           <div class="photo">
             <a href="http://vk.com/id{{profile?.Id}}" target="_blank"><img src="{{profile?.PhotoUrl}}" alt="" srcset=""></a> 
