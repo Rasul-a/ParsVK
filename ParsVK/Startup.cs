@@ -38,7 +38,7 @@ namespace ParsVK
             services.AddSingleton<IVkApiService, VkApiService>();
             services.AddScoped<ParseVkService>();
             services.AddScoped<IProfileRepository, ProfileRepository>();
-            services.AddScoped<IRepository<LikeUser>, LikeUserRepository>();
+          //  services.AddScoped<IRepository<LikeUser>, LikeUserRepository>();
             services.AddHttpClient();
         }
 
@@ -59,7 +59,7 @@ namespace ParsVK
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapDefaultControllerRoute();
+                endpoints.MapControllers();
             });
             app.UseSpa(spa =>
             {

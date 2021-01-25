@@ -7,32 +7,30 @@ import { ProfileResponse } from './ProfileResponse';
   providedIn: 'root'
 })
 export class ProfileService {
-
+  url: string="api/Profile/";
   constructor(private http: HttpClient) { }
 
   getAll() {
-    return this.http.get("api/getAll");
+    return this.http.get(this.url);
   }
 
   parseProfile(link: string){
-    return this.http.get("api/parseprofile?link="+link);
+    return this.http.post(this.url,link );
   }
 
   getDetails(id: any){
-    return this.http.get("api/getProfile?id="+id).pipe(
+    return this.http.get(this.url+id).pipe(
       map((data: ProfileResponse)=>{
         data.LikeUsers=data.LikeUsers.sort((a,b)=>(a.LikeCount>b.LikeCount ? -1:1));
         return data;
-      }
-        
-      )
+      })
     );
   }
 
   delete(id: any){
-    return this.http.get("api/delete?id="+id);
+    return this.http.delete(this.url+id);
   }
   getToken(code: string){
-    return this.http.get("api/gettoken?code="+code);
+    return this.http.get(this.url+"GetToken?code="+code);
   }
 }

@@ -5,12 +5,12 @@ export class ProfileResponse {
     Type: string;
     Bdate: string;
     City: string;
-    PhotoUrl: string;
-    Audios: number;
+    photoUrl: string;
+    audios: number;
     Photos: number;
     Friends: number;
     Groups: number;
-    MembersCount: number;
+    membersCount: number;
     WallItems: WallItem[];
     LikeUsers: LikeUser[];
   }

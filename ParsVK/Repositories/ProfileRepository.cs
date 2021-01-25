@@ -22,7 +22,7 @@ namespace ParsVK.Repositories
             return profile;
         }
 
-        public async Task<Profile> Delete(string id)
+        public async Task<Profile> DeleteAsync(string id)
         {
 
             var profile = await _ctx.Profiles.Include(p => p.WallItems).Include(p => p.LikeUsers).FirstOrDefaultAsync(p => p.Id == id);

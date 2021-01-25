@@ -12,40 +12,42 @@ using ParsVK.Repositories;
 using ParsVK.Services;
 
 namespace ParsVK.Controllers
-{
-    [Route("api")]
+{   
     [ApiController]
-    public class HomeController : ControllerBase
+    [Route("api/[controller]")]
+    public class ProfileController : ControllerBase
     {
         private IVkApiService _vkApiService;
         private IRepository<LikeUser> _likeUsers;
         private IProfileRepository _profiles;
         private ParseVkService _parseVk;
-        public HomeController(IVkApiService vkApiService, IProfileRepository profiles, IRepository<LikeUser> likeUsers, ParseVkService parseVk)
+        public ProfileController(IVkApiService vkApiService, IProfileRepository profiles, ParseVkService parseVk)
         {
             _parseVk = parseVk;
-            _likeUsers = likeUsers;
+         //   _likeUsers = likeUsers;
             _profiles = profiles;
             _vkApiService = vkApiService;
         }
-        [Route("gettoken")]
-        public async Task<IActionResult> GetTokenAsync(string code)
+     
+        [Route("GetToken")]
+        public async Task<IActionResult> GetToken(string code)
         {
-            await _vkApiService.GetTokenAsync(code);
-            //return BadRequest("bad");
+            try
+            {
+                await _vkApiService.GetTokenAsync(code);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
             return Ok();
         }
 
-        //public IActionResult Create(string link)
-        //{
-
-        //}
-
-
-
-        [Route("parseprofile")]
+        [HttpPost]
         public async Task<IActionResult> ParseProfile(string link)
         {
+            if (String.IsNullOrEmpty(link))
+                return StatusCode(StatusCodes.Status400BadRequest, "profile link: "+link);
             if (_vkApiService.AccessToken == "")
                 return StatusCode(StatusCodes.Status500InternalServerError, "5 User authorization failed: access_token has expired.");
             string id = link.Split('/').Last();
@@ -77,7 +79,7 @@ namespace ParsVK.Controllers
                     ProfileId = "-" + ProfileId;
                 profile = await _profiles.GetByIdAsync(ProfileId);
                 if (profile != null)
-                    await _profiles.Delete(profile.Id);
+                    await _profiles.DeleteAsync(profile.Id);
                 profile = _parseVk.ParseProfile(json,type);
 
                 //json = await _vkApiService.GetWallAsync(profile.Id);
@@ -135,16 +137,8 @@ namespace ParsVK.Controllers
                     {
                         likeUser.LikeCount++;
                         Debug.WriteLine("yyyyy:");
-                    }
-                    
-
-                    //item.WallItemLikes.Add(new WallItemLike
-                    //{
-                    //    LikeUser = likeUser,
-                    //    WallItem = item
-                    //});
+                    }                
                 }
-
             }
 
             profile.WallItems = wallItems;
@@ -156,42 +150,32 @@ namespace ParsVK.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
             return Ok(JsonConvert.SerializeObject(profile));
-            //return StatusCode(StatusCodes.Status400BadRequest);
         }
 
-        [Route("getAll")]
-        public async Task<IActionResult> GetAllAsync()
+        [HttpGet]
+        public async Task<ActionResult<List<Profile>>> Get()
         {
             var r = await _profiles.GetAllAsync();
-            return Ok(JsonConvert.SerializeObject(r));
+            return r;
         }
 
-        [Route("getProfile")]
-        public async Task<IActionResult> GetProfileAsync(string id)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> Get(string id)
         {
-            return Ok(JsonConvert.SerializeObject(await _profiles.GetByIdAsync(id)));
+            var p = await _profiles.GetByIdAsync(id);
+            if (p == null)
+                return NotFound();
+            return Ok(JsonConvert.SerializeObject(p));
         }
 
-        [Route("delete")]
-        public async Task<IActionResult> DeleteAsync(string id)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(string id)
         {
-            await _profiles.Delete(id);
-            return Ok();
-        }
-
-        private string GetUrlFromAttachment(Attachment attachment, string type)
-        {
-            switch (type)
-            {
-                case "video":
-                    return attachment.video.image[2].url;
-                case "doc":
-                    return attachment.doc.preview.photo.sizes[2].src;
-                case "photo":
-                    return attachment.photo.sizes[2].url;
-                default:
-                    return "";
-            }
+            var p = await _profiles.GetByIdAsync(id);
+            if (p == null)
+                return NotFound();
+            await _profiles.DeleteAsync(id);
+            return NoContent();
         }
     }
 }

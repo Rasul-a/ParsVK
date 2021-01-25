@@ -23,9 +23,9 @@
         <div class="allprofiles">
           <div  class="profile" *ngFor="let item of allProfiles">
             
-            <img (click)="getDetails(item?.Id)" src="{{item?.PhotoUrl}}" width="32px" alt="" srcset="">
-            {{item?.LastName}} {{item?.FirstName}}
-            <button (click)="deleteProfile(item?.Id)" class="btn btn-danger btn-sm"><i class='fa fa-trash'></i></button>
+            <img (click)="getDetails(item?.id)" src="{{item?.photoUrl}}" width="32px" alt="" srcset="">
+            {{item?.lastName}} {{item?.firstName}}
+            <button (click)="deleteProfile(item?.id)" class="btn btn-danger btn-sm"><i class='fa fa-trash'></i></button>
             
           </div>
         </div>

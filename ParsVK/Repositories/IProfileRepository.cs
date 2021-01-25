@@ -12,6 +12,6 @@ namespace ParsVK.Repositories
         Task<List<Profile>> GetAllAsync();
         Task<Profile> CreateAsync(Profile profile);
         Task<Profile> UpdateAsync(Profile profile);
-        Task<Profile> Delete(string id);
+        Task<Profile> DeleteAsync(string id);
     }
 }
