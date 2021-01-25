@@ -14,6 +14,7 @@ namespace ParsVK.Repositories
         Task<T> CreateAsync(T item);
         Task<List<T>> CreateAsync(List<T> items);
         Task<T> UpdateAsync(T item);
+       
         
     }
 }

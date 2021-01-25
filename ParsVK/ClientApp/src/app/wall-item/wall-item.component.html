@@ -1,0 +1,10 @@
+<div class="card wall-item" style="width: 16rem;">
+    <div *ngIf="item.Url!=''" class="card-img"><img class="card-img-top" src="{{item.Url}}" alt="Card image cap"></div> 
+    <div class="card-body">
+      <p class="card-title">{{item.Text}}</p>
+      <div class="card-text">{{item.HistoryText}}</div>
+    </div>
+    <div class="counters">
+      Лайки: <b>{{item.LikesCount}}</b>    Комментарии: <b>{{item.CommentsCount}}</b> 
+    </div>
+  </div>

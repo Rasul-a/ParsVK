@@ -1,0 +1,27 @@
+
+
+.card-img-top{
+    max-height: 200px;
+    width: auto;
+}
+.card-img{
+    display: flex;
+    height: 200px;
+    justify-content: center;
+    overflow: hidden;
+}
+.card-title, .card-text{
+    overflow: hidden;
+    overflow-y: hidden;
+    text-overflow: ellipsis;    
+    font-size: 12px;
+}
+
+.card-title{
+    max-height: 50px;   
+}
+.card-text{
+    max-height: 100px;
+    color: cadetblue;
+    font-size: 11px;
+}

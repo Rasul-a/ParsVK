@@ -13,6 +13,7 @@ namespace ParsVK.Models
 
 
         public string LastName { get; set; }
+        public string Type { get; set; }
 
         public string Bdate { get; set; }
 
@@ -23,6 +24,7 @@ namespace ParsVK.Models
         public int Photos { get; set; }
         public int Friends { get; set; }
         public int Groups { get; set; }
+        public int MembersCount { get; set; }
 
         public List<WallItem> WallItems { get; set; }
         public List<LikeUser> LikeUsers { get; set; }

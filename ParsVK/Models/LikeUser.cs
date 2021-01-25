@@ -1,4 +1,6 @@
 ﻿
+using Newtonsoft.Json;
+
 namespace ParsVK.Models
 {
     public class LikeUser
@@ -9,6 +11,8 @@ namespace ParsVK.Models
         public string FullName { get; set; }
         public string PhotoUrl { get; set; }
         public int LikeCount { get; set; }
+        [JsonIgnore]
+        public Profile Profile { get; set; }
 
     }
 }

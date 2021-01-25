@@ -1,0 +1,74 @@
+<div *ngIf="error!=null" class="alert alert-danger" role="alert">
+    Ошибка <b>{{error}}</b>
+</div>
+<ng-template #errorToken> <div  class="alert alert-warning" role="alert">
+    Необходимо получить ключ доступа. <a href="https://oauth.vk.com/authorize?client_id=7734816&display=page&redirect_uri=http://localhost:5000/gettoken&scope=friends&response_type=code&v=5.126">Получить</a>
+  </div></ng-template>
+  <div class="container">
+    <div class="row">
+      <div class="col search">
+        <div *ngIf="isAccess;else errorToken" class="input-group">
+          <input class="form-control" [(ngModel)]="link" type="text" name="" id="">
+          <input *ngIf="!load" (click)="parseProfile()" class="btn btn-outline-secondary" type="button" value="Parse">
+  
+        </div>
+        <div *ngIf="load" class="spinner-border" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+      </div>
+    </div>
+  
+  
+    <div class="content">
+        <div class="allprofiles">
+          <div  class="profile" *ngFor="let item of allProfiles">
+            
+            <img (click)="getDetails(item?.Id)" src="{{item?.PhotoUrl}}" width="32px" alt="" srcset="">
+            {{item?.LastName}} {{item?.FirstName}}
+            <button (click)="deleteProfile(item?.Id)" class="btn btn-danger btn-sm"><i class='fa fa-trash'></i></button>
+            
+          </div>
+        </div>
+      <div *ngIf="profile!=null" class="details">
+        <div class="head">
+          <div class="photo">
+            <a href="http://vk.com/id{{profile?.Id}}" target="_blank"><img src="{{profile?.PhotoUrl}}" alt="" srcset=""></a> 
+          </div> 
+          
+          <div class="info">
+            <div class="name">{{profile?.LastName}} {{profile?.FirstName}} {{profile?.Bdate}}</div>
+            <div class="city">{{profile?.City}}</div>
+            <div *ngIf="profile?.Type=='user'" class="counts">
+              <span>Друзья: {{profile?.Friends}}</span>
+              <span>Группы: {{profile?.Groups}}</span>
+              <span>Фото: {{profile?.Photos}}</span>
+              <span>Аудио: {{profile?.Audios}}</span>
+            </div>
+            <div *ngIf="profile?.Type=='group'" class="counts">
+                <span>Участников : {{profile?.MembersCount}}</span>
+            </div>
+          </div>
+        </div>
+        <button class="btn btn-outline-secondary btn-sm" (click)="toggle('wall')">Посты</button>
+        <button class="btn btn-outline-secondary btn-sm" (click)="toggle('like')">Кто лайкал</button>
+        <div *ngIf="showWall" class="wall">
+          Сортировать по 
+          <button (click)="sortWall('like')" class="btn btn-link btn-sm">лайкам</button>
+          <button (click)="sortWall('coment')" class="btn btn-link btn-sm">комментариям</button>
+          <div class="wall-items">
+            <app-wall-item *ngFor="let item of profile?.WallItems" [item]=item></app-wall-item>
+          </div>
+        </div>
+        <div *ngIf="showLikeUsers" class="likes">
+          <div *ngFor="let item of profile?.LikeUsers" class="like">
+            <div class="photo">
+              <img src="{{item.PhotoUrl}}" alt="">
+            </div>
+            <div class="like-name"><a href="https://vk.com/id{{item.OwnerId}}"  target="_blank">{{item.FullName}}</a></div>
+            <div class="like-count">{{item.LikeCount}} лайк(а)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <router-outlet></router-outlet>
+  </div>

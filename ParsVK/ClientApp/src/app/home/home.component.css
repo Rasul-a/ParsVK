@@ -1,0 +1,50 @@
+.content{
+    display: flex;
+}
+.allprofiles{
+    padding: 10px;
+    min-width: 250px;
+}
+.profile{
+    padding: 5px;
+    border: 1px solid #ced4da
+}
+.profile img:hover{
+   
+    border: 1px solid #0a4d91;
+    cursor: pointer;
+}
+
+.head{
+    display: flex;
+    margin-bottom: 5px;
+}
+.details{
+    padding: 10px;
+}
+.head .photo{
+    margin-right: 10px;
+}
+
+.info{
+    display: inline-block;
+}
+
+.counts span{
+    margin-right: 10px;
+}
+.search{
+    display: flex;
+}
+
+.wall-items, .likes {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.like{
+    width: 120px;
+    margin-bottom: 5px;
+    margin-right: 5px;
+    border: 1px solid #ced4da;
+}

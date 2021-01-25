@@ -20,8 +20,10 @@ namespace ParsVK.Controllers
         private IVkApiService _vkApiService;
         private IRepository<LikeUser> _likeUsers;
         private IProfileRepository _profiles;
-        public HomeController(IVkApiService vkApiService, IProfileRepository profiles, IRepository<LikeUser> likeUsers)
+        private ParseVkService _parseVk;
+        public HomeController(IVkApiService vkApiService, IProfileRepository profiles, IRepository<LikeUser> likeUsers, ParseVkService parseVk)
         {
+            _parseVk = parseVk;
             _likeUsers = likeUsers;
             _profiles = profiles;
             _vkApiService = vkApiService;
@@ -30,118 +32,101 @@ namespace ParsVK.Controllers
         public async Task<IActionResult> GetTokenAsync(string code)
         {
             await _vkApiService.GetTokenAsync(code);
+            //return BadRequest("bad");
             return Ok();
         }
+
+        //public IActionResult Create(string link)
+        //{
+
+        //}
+
+
 
         [Route("parseprofile")]
         public async Task<IActionResult> ParseProfile(string link)
         {
             if (_vkApiService.AccessToken == "")
-                return StatusCode(StatusCodes.Status500InternalServerError, "no access_token");
+                return StatusCode(StatusCodes.Status500InternalServerError, "5 User authorization failed: access_token has expired.");
             string id = link.Split('/').Last();
-            var json = await _vkApiService.GetUsersAsync(id);
-            //парсить ошибку
-            dynamic res = JsonConvert.DeserializeObject(json);
-               Profile profile = await _profiles.GetByIdAsync((string)res.response[0].id);
-            //Profile profile = null;
-            if (profile == null)
-                profile = new Profile();
-
-            profile.Id = (string)res.response[0].id;
-            profile.FirstName = res.response[0].first_name;
-            profile.LastName = res.response[0].last_name;
-            profile.City = res.response[0].city?.title;
-            profile.Bdate = res.response[0].bdate;
-            profile.PhotoUrl = res.response[0].photo_100;
-            profile.Audios = res.response[0].counters?.audios;
-            profile.Friends = res.response[0].counters?.friends;
-            profile.Groups = res.response[0].counters?.groups;
-            profile.Photos = res.response[0].counters?.photos;
-
-            var wallJson = await _vkApiService.GetWallAsync(profile.Id);
-            var wallGet = JsonConvert.DeserializeObject<WallGet>(wallJson);
-            List<WallItem> wallItems = new List<WallItem>();
-            int index=1;
-            foreach (var item in wallGet.response.items)
+            string json;
+            Profile profile;
+            List<WallItem> wallItems;
+            try
             {
-                //wallItems.Add(new WallItem
+                json = await _vkApiService.ResolveScreenNameAsync(id);
+                dynamic res = JsonConvert.DeserializeObject(json);
+
+                string type = res.response?.type;
+                if (type== "application")
+                    return StatusCode(StatusCodes.Status500InternalServerError, "application profile");
+                json = await _vkApiService.GetProfileAsync(id, type);
+                
+
+                // var json = await _vkApiService.GetUsersAsync(id);
+                //парсить ошибку
+                res = JsonConvert.DeserializeObject(json);
+                //if (res.error != null)
                 //{
-                //    Id = item.id,
-                //    Text = item.text,
-                //    LikesCount = item.likes.count,
-                //    CommentsCount = item.comments.count,
-                //    HistoryText = item.copy_history.text,
-                //    Type = item.copy_history.attachments[0].type,
-                //    // Url = item.copy_history.attachments[0].toString()
-                //});
-                var a = new WallItem();
-               // Attachment attach
-                a.Id = item.id.ToString();
-                a.Text = item.text;
-                a.LikesCount = item.likes.count;
-                a.CommentsCount = item.comments.count;
+                //    if (res.error.error_code == 5)
+                //        return StatusCode(StatusCodes.Status500InternalServerError, "no access_token");
+                //    return StatusCode(StatusCodes.Status500InternalServerError, res.error.error_code+" "+ res.error.error_message);
+                //}
+                string ProfileId= (string)res.response[0].id; ;
+                if (type == "group")
+                    ProfileId = "-" + ProfileId;
+                profile = await _profiles.GetByIdAsync(ProfileId);
+                if (profile != null)
+                    await _profiles.Delete(profile.Id);
+                profile = _parseVk.ParseProfile(json,type);
 
-                if (item.copy_history != null)
-                {
-                    a.HistoryText = item.copy_history[0].text;
-                    a.Type = item.copy_history[0].attachments?[0].type;
-                    a.Url = GetUrlFromAttachment(item.copy_history[0].attachments?[0], a.Type);
+                //json = await _vkApiService.GetWallAsync(profile.Id);
 
-                }
-                else 
-                    if (item.attachments != null)
-                {
-                    a.Type = item.attachments[0].type;
-                    a.Url = GetUrlFromAttachment(item.attachments?[0], a.Type);
-                }
+                wallItems = _parseVk.ParseWall(await _vkApiService.GetWallAsync(profile.Id));
 
-
-                wallItems.Add(a);
-                Debug.WriteLine(index+++": "+item.id);
-            }
-
-
-
-            // List<WallItem> LikesItems = wallItems.OrderByDescending(a => a.LikesCount).Take(10).ToList();
-            // List<WallItem> CommentsItems = wallItems.OrderByDescending(a => a.CommentsCount).Take(10).ToList();
-
-            List<LikeUser> likeUsers;
-            likeUsers = new List<LikeUser>();
-            index = 1;
+            //---------------------------------------------------
+            var likeUsers = new List<LikeUser>();
+            int index = 1;
             foreach (var item in wallItems)
             {
-                
-                
                 dynamic likes;
-                do
-                {
-                    await Task.Delay(100);
-                    var likesJson = await _vkApiService.GetLikesAsync(profile.Id, item.Id, "post");
+                //do
+                //{
+                //    await Task.Delay(100);
+                //    var likesJson = await _vkApiService.GetLikesAsync(profile.Id, item.ItemId, "post");
+                //    likes = JsonConvert.DeserializeObject(likesJson);
+                //} while (likes.error?.error_code == 6);
+
+
+
+
+
+                    await Task.Delay(350);
+                    //var likesJson = await _vkApiService.GetLikesAsync(profile.Id, item.ItemId, "post");
+                    var likesJson = await _vkApiService.GetLikeUsersAsync(profile.Id, item.ItemId, "post");
                     likes = JsonConvert.DeserializeObject(likesJson);
-                } while (likes.error?.error_code==6);
-                
-                
-                Debug.WriteLine("Wall "+index+++": " +item.Id);
-                foreach (var userId in likes.response?.items)
+
+
+                Debug.WriteLine("Wall "+index+++": " +item.ItemId);
+                foreach (var ul in likes.response)
                 {
                     
-                    dynamic ul;
-                    do
-                    {
-                        await Task.Delay(100);
-                        var userLikeJson = await _vkApiService.GetUsersAsync(userId.ToString());
-                        ul = JsonConvert.DeserializeObject(userLikeJson);
-                    } while (ul.error?.error_code == 6);
+                    //dynamic ul;
 
-                    var likeUser = likeUsers.FirstOrDefault(l => l.OwnerId == userId.ToString());
+                    //    await Task.Delay(350);
+                    //    var userLikeJson = await _vkApiService.GetProfileAsync(userId.ToString(),"user");
+                    //    ul = JsonConvert.DeserializeObject(userLikeJson);
+
+
+                    var likeUser = likeUsers.FirstOrDefault(l => l.OwnerId == ul.id.ToString());
                     if (likeUser == null)
                     {
                         likeUser = new LikeUser
                         {
-                            OwnerId = userId.ToString(),
+                            OwnerId = ul.id.ToString(),
                             ProfileId = profile.Id,
-                            FullName = ul.response[0].first_name.ToString() + " " + ul.response[0].last_name.ToString(),
-                            PhotoUrl = ul.response[0].photo_100,
+                            FullName = ul.first_name.ToString() + " " + ul.last_name.ToString(),
+                            PhotoUrl = ul.photo_100,
                             LikeCount = 1
                         };
                         likeUsers.Add(likeUser);
@@ -162,16 +147,36 @@ namespace ParsVK.Controllers
 
             }
 
-
             profile.WallItems = wallItems;
             profile.LikeUsers = likeUsers;
-            //if (await _profiles.GetByIdAsync(profile.Id) == null)
-              //  await _profiles.CreateAsync(profile);
-            //else
-                await _profiles.UpdateAsync(profile);
-            //String.Join(',',LikesItems.Select(a=>a.Id+"="+a.LikesCount))+"---"+ String.Join(',', CommentsItems.Select(a => a.Id+"="+a.CommentsCount)) + "---" + String.Join(',', LikesItems.Union(CommentsItems).Select(a => a.Id))
+            await _profiles.CreateAsync(profile);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
             return Ok(JsonConvert.SerializeObject(profile));
             //return StatusCode(StatusCodes.Status400BadRequest);
+        }
+
+        [Route("getAll")]
+        public async Task<IActionResult> GetAllAsync()
+        {
+            var r = await _profiles.GetAllAsync();
+            return Ok(JsonConvert.SerializeObject(r));
+        }
+
+        [Route("getProfile")]
+        public async Task<IActionResult> GetProfileAsync(string id)
+        {
+            return Ok(JsonConvert.SerializeObject(await _profiles.GetByIdAsync(id)));
+        }
+
+        [Route("delete")]
+        public async Task<IActionResult> DeleteAsync(string id)
+        {
+            await _profiles.Delete(id);
+            return Ok();
         }
 
         private string GetUrlFromAttachment(Attachment attachment, string type)
@@ -179,11 +184,11 @@ namespace ParsVK.Controllers
             switch (type)
             {
                 case "video":
-                    return attachment.video.image[0].url;
+                    return attachment.video.image[2].url;
                 case "doc":
-                    return attachment.doc.preview.photo.sizes[0].src;
+                    return attachment.doc.preview.photo.sizes[2].src;
                 case "photo":
-                    return attachment.photo.sizes[0].url;
+                    return attachment.photo.sizes[2].url;
                 default:
                     return "";
             }

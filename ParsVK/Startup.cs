@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,10 +29,14 @@ namespace ParsVK
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-                ;
+            services.AddSpaStaticFiles(configuration =>
+            {
+                configuration.RootPath = "ClientApp/dist";
+            });
           //  string con = Configuration.GetConnectionString("Default");
             services.AddDbContext<AppDBContext>(opt => opt.UseSqlServer(Configuration.GetConnectionString("Default")));
             services.AddSingleton<IVkApiService, VkApiService>();
+            services.AddScoped<ParseVkService>();
             services.AddScoped<IProfileRepository, ProfileRepository>();
             services.AddScoped<IRepository<LikeUser>, LikeUserRepository>();
             services.AddHttpClient();
@@ -45,11 +50,26 @@ namespace ParsVK
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseStaticFiles();
+            if (!env.IsDevelopment())
+            {
+                app.UseSpaStaticFiles();
+            }
             app.UseRouting();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapDefaultControllerRoute();
+            });
+            app.UseSpa(spa =>
+            {
+                spa.Options.SourcePath = "ClientApp";
+
+                if (env.IsDevelopment())
+                {
+                    spa.UseProxyToSpaDevelopmentServer("http://localhost:4200");
+                    //spa.UseAngularCliServer(npmScript: "start");
+                }
             });
         }
     }

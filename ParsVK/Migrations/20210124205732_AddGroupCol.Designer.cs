@@ -9,8 +9,8 @@ using ParsVK.Models;
 namespace ParsVK.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    [Migration("20210122233424_init")]
-    partial class init
+    [Migration("20210124205732_AddGroupCol")]
+    partial class AddGroupCol
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -75,11 +75,17 @@ namespace ParsVK.Migrations
                     b.Property<string>("LastName")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("MembersCount")
+                        .HasColumnType("int");
+
                     b.Property<string>("PhotoUrl")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Photos")
                         .HasColumnType("int");
+
+                    b.Property<string>("Type")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -88,8 +94,10 @@ namespace ParsVK.Migrations
 
             modelBuilder.Entity("ParsVK.Models.WallItem", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<int>("CommentsCount")
                         .HasColumnType("int");
@@ -98,6 +106,9 @@ namespace ParsVK.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("HistoryText")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ItemId")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("LikesCount")
@@ -124,16 +135,18 @@ namespace ParsVK.Migrations
 
             modelBuilder.Entity("ParsVK.Models.LikeUser", b =>
                 {
-                    b.HasOne("ParsVK.Models.Profile", null)
+                    b.HasOne("ParsVK.Models.Profile", "Profile")
                         .WithMany("LikeUsers")
-                        .HasForeignKey("ProfileId");
+                        .HasForeignKey("ProfileId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("ParsVK.Models.WallItem", b =>
                 {
                     b.HasOne("ParsVK.Models.Profile", "Profile")
                         .WithMany("WallItems")
-                        .HasForeignKey("ProfileId");
+                        .HasForeignKey("ProfileId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618
         }

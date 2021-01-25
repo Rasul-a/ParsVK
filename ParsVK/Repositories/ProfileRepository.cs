@@ -24,9 +24,11 @@ namespace ParsVK.Repositories
 
         public async Task<Profile> Delete(string id)
         {
-            var profile = await _ctx.Profiles.FirstOrDefaultAsync(p => p.Id == id);
+
+            var profile = await _ctx.Profiles.Include(p => p.WallItems).Include(p => p.LikeUsers).FirstOrDefaultAsync(p => p.Id == id);
             if (profile != null)
             {
+                
                 _ctx.Profiles.Remove(profile);
                 await _ctx.SaveChangesAsync();
             }
@@ -41,7 +43,7 @@ namespace ParsVK.Repositories
 
         public async Task<Profile> GetByIdAsync(string id)
         {
-            return await _ctx.Profiles.FirstOrDefaultAsync(p => p.Id == id);
+            return await _ctx.Profiles.Include(p=>p.WallItems).Include(p=>p.LikeUsers).FirstOrDefaultAsync(p => p.Id == id);
         }
 
         public async Task<Profile> UpdateAsync(Profile profile)
