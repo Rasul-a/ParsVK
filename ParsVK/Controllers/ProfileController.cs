@@ -72,10 +72,10 @@ namespace ParsVK.Controllers
 
                 wallItems = _parseVk.ParseWall(await _vkApiService.GetWallAsync(profile.Id));
                 //-------------------------
-                res = JsonConvert.DeserializeObject(await _vkApiService.GetSubscriptions(profile.Id));
-                List<string> SubIds = res.response?.groups.items.ToObject<List<string>>();
+             //   res = JsonConvert.DeserializeObject(await _vkApiService.GetSubscriptions(profile.Id));
+             //   List<string> SubIds = res.response?.groups.items.ToObject<List<string>>();
 
-                res = JsonConvert.DeserializeObject(await _vkApiService.GetNewsfeed(String.Join(',',SubIds)));
+             //   res = JsonConvert.DeserializeObject(await _vkApiService.GetNewsfeed(String.Join(',',SubIds)));
 
                 //-------------------
                 var likeUsers = new List<LikeUser>();
@@ -83,12 +83,6 @@ namespace ParsVK.Controllers
                 {
                     int count = wallItems.Count - i > 12 ? 12 : wallItems.Count - i;
                     dynamic likes;
-                    //do
-                    //{
-                    //    await Task.Delay(100);
-                    //    var likesJson = await _vkApiService.GetLikesAsync(profile.Id, item.ItemId, "post");
-                    //    likes = JsonConvert.DeserializeObject(likesJson);
-                    //} while (likes.error?.error_code == 6);
                     await Task.Delay(350);
                     //var likesJson = await _vkApiService.GetLikesAsync(profile.Id, item.ItemId, "post");
                     // var likesJson = await _vkApiService.GetLikeUsersAsync(profile.Id, item.ItemId, "post");
@@ -97,10 +91,6 @@ namespace ParsVK.Controllers
                     Debug.WriteLine("wallItemsParseCount: " + i);
                     foreach (var ul in likes.response)
                     {
-                        //    await Task.Delay(350);
-                        //    var userLikeJson = await _vkApiService.GetProfileAsync(userId.ToString(),"user");
-                        //    ul = JsonConvert.DeserializeObject(userLikeJson);
-
                         var likeUser = likeUsers.FirstOrDefault(l => l.OwnerId == ul.id.ToString());
                         if (likeUser == null)
                         {
@@ -123,12 +113,6 @@ namespace ParsVK.Controllers
                 }
 
                 //------------------
-
-
-
-
-
-
                 profile.WallItems = wallItems;
                 profile.LikeUsers = likeUsers;
                 await _profiles.CreateAsync(profile);

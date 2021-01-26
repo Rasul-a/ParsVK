@@ -2,7 +2,7 @@
     Ошибка <b>{{error}}</b>
 </div>
 <ng-template #errorToken> <div  class="alert alert-warning" role="alert">
-    Необходимо получить ключ доступа. <a href="https://oauth.vk.com/authorize?client_id=7734816&display=page&redirect_uri=http://localhost:5000/gettoken&scope=wall,groups,photos,friends,video,market,email,offline&response_type=code&v=5.126">Получить</a>
+    Необходимо получить ключ доступа. <a href="https://oauth.vk.com/authorize?client_id=7734816&display=page&redirect_uri=http://localhost:5000/gettoken&scope=wall,groups,photos,friends,email,offline&response_type=code&v=5.126">Получить</a>
   </div></ng-template>
   <div class="container">
     <div class="row">
@@ -22,10 +22,11 @@
     <div class="content">
         <div class="allprofiles">
           <div  class="profile" *ngFor="let item of allProfiles">
-            <img (click)="getDetails(item?.id)" src="{{item?.photoUrl}}" width="32px" alt="" srcset="">
-            {{item?.lastName}} {{item?.firstName}}
-            <button (click)="deleteProfile(item?.id)" class="btn btn-danger btn-sm"><i class='fa fa-trash'></i></button>
-            
+            <div (click)="getDetails(item?.id)" class="info">
+              <img  src="{{item?.photoUrl}}" width="32px" alt="" srcset="">
+              {{item?.lastName}} {{item?.firstName}}
+            </div>
+            <button (click)="deleteProfile(item?.id)" class="btn btn-outline-danger btn-sm"><i class='fa fa-trash'></i></button>           
           </div>
         </div>
         <div *ngIf="loadProfile" class="spinner-border" role="status">
@@ -72,5 +73,4 @@
         </div>
       </div>
     </div>
-    <router-outlet></router-outlet>
   </div>

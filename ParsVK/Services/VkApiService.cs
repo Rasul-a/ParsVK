@@ -13,9 +13,8 @@ namespace ParsVK.Services
 {
     public class VkApiService : IVkApiService
     {
-        private string accessToken = "669a3d01d120680cde70b5885f1f19a0b47923eb5fd4886fbac2f9e873e6c36232fb66d486a8fd5057d30";
-        // private HttpContext _context;
-        //private HttpClient _client = new HttpClient();
+        //669a3d01d120680cde70b5885f1f19a0b47923eb5fd4886fbac2f9e873e6c36232fb66d486a8fd5057d30
+        private string accessToken = "";
         private IConfiguration _configuration;
         private IHttpClientFactory _httpClientFactory;
         public string AccessToken => accessToken;
@@ -23,7 +22,6 @@ namespace ParsVK.Services
         {
             _configuration = configuration;
             _httpClientFactory = httpClientFactory;
-           // _context = context;
         }
 
         public async Task GetTokenAsync(string code)
@@ -86,7 +84,6 @@ namespace ParsVK.Services
             {
                 string s = res.error.error_code + " " + res.error.error_msg;
                 throw new Exception(s);
-               // return StatusCode(StatusCodes.Status500InternalServerError, res.error.error_code + " " + res.error.error_message);
             }
             return json;
         }

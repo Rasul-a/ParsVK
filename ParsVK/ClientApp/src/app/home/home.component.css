@@ -3,15 +3,20 @@
 }
 .allprofiles{
     padding: 10px;
-    min-width: 250px;
+    
 }
 .profile{
-    padding: 5px;
+    display: flex;
+    min-width: 220px;
     border: 1px solid #ced4da
 }
-.profile img:hover{
-   
-    border: 1px solid #0a4d91;
+
+.profile .info{
+    flex: 1;
+ }
+
+.profile .info:hover{
+    background-color: #ced4da;
     cursor: pointer;
 }
 
