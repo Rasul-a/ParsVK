@@ -14,5 +14,7 @@ namespace ParsVK.Services
         Task<string> GetLikesAsync(string ownerId, string itemId, string type);
         Task<string> ResolveScreenNameAsync(string name);
         Task<string> GetLikeUsersAsync(string ownerId, string itemId, string type);
+        Task<string> GetSubscriptions(string id);
+        Task<string> GetNewsfeed(string sourceIds);
     }
 }

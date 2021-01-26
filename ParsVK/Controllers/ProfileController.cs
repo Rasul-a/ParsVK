@@ -71,8 +71,13 @@ namespace ParsVK.Controllers
                 profile = _parseVk.ParseProfile(json,type);
 
                 wallItems = _parseVk.ParseWall(await _vkApiService.GetWallAsync(profile.Id));
+                //-------------------------
+                res = JsonConvert.DeserializeObject(await _vkApiService.GetSubscriptions(profile.Id));
+                List<string> SubIds = res.response?.groups.items.ToObject<List<string>>();
 
-            //---------------------------------------------------
+                res = JsonConvert.DeserializeObject(await _vkApiService.GetNewsfeed(String.Join(',',SubIds)));
+
+                //-------------------
                 var likeUsers = new List<LikeUser>();
                 for (int i = 0; i < wallItems.Count; i=i+12)
                 {
@@ -116,6 +121,13 @@ namespace ParsVK.Controllers
                         }
                     }
                 }
+
+                //------------------
+
+
+
+
+
 
                 profile.WallItems = wallItems;
                 profile.LikeUsers = likeUsers;

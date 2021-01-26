@@ -75,17 +75,13 @@ namespace ParsVK.Services
 
         private string GetUrlFromAttachment(Attachment attachment, string type)
         {
-            switch (type)
+            return type switch
             {
-                case "video":
-                    return attachment.video.image[2].url;
-                case "doc":
-                    return attachment.doc.preview.photo.sizes[2].src;
-                case "photo":
-                    return attachment.photo.sizes[2].url;
-                default:
-                    return "";
-            }
+                "video" => attachment.video.image[2].url,
+                "doc" => attachment.doc.preview.photo.sizes[2].src,
+                "photo" => attachment.photo.sizes[2].url,
+                _ => "",
+            };
         }
     }
 }

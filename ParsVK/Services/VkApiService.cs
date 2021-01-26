@@ -13,7 +13,7 @@ namespace ParsVK.Services
 {
     public class VkApiService : IVkApiService
     {
-        private string accessToken = "9a7a5108ef735365cf388f61aa0dbb8933c4394f53b1b85670df8f87f621e3b9974235c693ba5276df98a";
+        private string accessToken = "669a3d01d120680cde70b5885f1f19a0b47923eb5fd4886fbac2f9e873e6c36232fb66d486a8fd5057d30";
         // private HttpContext _context;
         //private HttpClient _client = new HttpClient();
         private IConfiguration _configuration;
@@ -64,6 +64,16 @@ namespace ParsVK.Services
             string code = $"var items=[{itemIds}]; var i =0; var res=[]; while (i < items.length){{res = res %2B API.users.get({{'fields':'photo_100', 'user_ids': API.likes.getList({{ 'type':'{type}','owner_id':'{ownerId}','item_id':items[i],'count':'300'}}).items}});i = i %2B 1;}}; return res; ";
             //string code = $"return API.users.get({{'fields':'photo_100','user_ids': API.likes.getList({{'type':'{type}','owner_id':'{ownerId}','item_id':'{itemId}','count':'1000'}}).items}});";
             return await GetAsync($"https://api.vk.com/method/execute?v=5.126&access_token={accessToken}&code={code}");
+        }
+
+        public async Task<string> GetSubscriptions(string id)
+        {
+            return await GetAsync($"https://api.vk.com/method/users.getSubscriptions?v=5.126&access_token={accessToken}&user_id={id}");
+        }
+
+        public async Task<string> GetNewsfeed(string sourceIds)
+        {
+            return await GetAsync($"https://api.vk.com/method/newsfeed.get?v=5.126&access_token={accessToken}&source_ids={sourceIds}");
         }
 
         private async Task<string> GetAsync(string url)
