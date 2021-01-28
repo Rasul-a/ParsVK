@@ -60,17 +60,20 @@ namespace ParsVK.Controllers
                 string type = res.response?.type;
                 if (type== "application")
                     return StatusCode(StatusCodes.Status500InternalServerError, "application profile");
+                //получаем общие данные о странице
                 json = await _vkApiService.GetProfileAsync(id, type);
                 res = JsonConvert.DeserializeObject(json);
                 string ProfileId= (string)res.response[0].id; ;
                 if (type == "group")
                     ProfileId = "-" + ProfileId;
                 profile = await _profiles.GetByIdAsync(ProfileId);
+                //если такой профиль уже есть в бд, удаляем, для записи новых данных
                 if (profile != null)
                     await _profiles.DeleteAsync(profile.Id);
                 profile = _parseVk.ParseProfile(json,type);
 
-                wallItems = _parseVk.ParseWall(await _vkApiService.GetWallAsync(profile.Id));
+                //получаем записи со стены
+                wallItems = _parseVk.ParseWall(await _vkApiService.GetWallAsync(profile.Id,50));
                 //-------------------------
              //   res = JsonConvert.DeserializeObject(await _vkApiService.GetSubscriptions(profile.Id));
              //   List<string> SubIds = res.response?.groups.items.ToObject<List<string>>();
@@ -78,17 +81,22 @@ namespace ParsVK.Controllers
              //   res = JsonConvert.DeserializeObject(await _vkApiService.GetNewsfeed(String.Join(',',SubIds)));
 
                 //-------------------
+                //полачаем все лайки
+                //для ускорения используется метод execute, который может содержать до 25 запросов 
                 var likeUsers = new List<LikeUser>();
                 for (int i = 0; i < wallItems.Count; i=i+12)
                 {
+                    //делаем выборку по 12 записей, в итоге 24 запроса 
                     int count = wallItems.Count - i > 12 ? 12 : wallItems.Count - i;
                     dynamic likes;
+                    //ограничение максимум 3 запроса в сек.
                     await Task.Delay(350);
                     //var likesJson = await _vkApiService.GetLikesAsync(profile.Id, item.ItemId, "post");
                     // var likesJson = await _vkApiService.GetLikeUsersAsync(profile.Id, item.ItemId, "post");
-                    var likesJson = await _vkApiService.GetLikeUsersAsync(profile.Id, String.Join(',', wallItems.GetRange(i, count).Select(wi => wi.ItemId)), "post");
+                    var likesJson = await _vkApiService.GetLikeUsersAsync(profile.Id, String.Join(',', wallItems.GetRange(i, count).Select(wi => wi.ItemId)), "post",300);
                     likes = JsonConvert.DeserializeObject(likesJson);
                     Debug.WriteLine("wallItemsParseCount: " + i);
+                    // записываем в бд о пользователе и количестве лайков на стене
                     foreach (var ul in likes.response)
                     {
                         var likeUser = likeUsers.FirstOrDefault(l => l.OwnerId == ul.id.ToString());

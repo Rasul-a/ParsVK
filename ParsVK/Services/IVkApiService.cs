@@ -10,10 +10,10 @@ namespace ParsVK.Services
         string AccessToken { get; }
         Task GetTokenAsync(string code);
         Task<string> GetProfileAsync(string Id, string type);
-        Task<string> GetWallAsync(string ownerId);
-        Task<string> GetLikesAsync(string ownerId, string itemId, string type);
+        Task<string> GetWallAsync(string ownerId, int count);
+        Task<string> GetLikesAsync(string ownerId, string itemId, string type, int count);
         Task<string> ResolveScreenNameAsync(string name);
-        Task<string> GetLikeUsersAsync(string ownerId, string itemId, string type);
+        Task<string> GetLikeUsersAsync(string ownerId, string itemId, string type, int count);
         Task<string> GetSubscriptions(string id);
         Task<string> GetNewsfeed(string sourceIds);
     }

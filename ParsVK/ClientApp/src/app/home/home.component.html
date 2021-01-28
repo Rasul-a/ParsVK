@@ -8,7 +8,7 @@
     <div class="row">
       <div class="col search">
         <div *ngIf="isAccess;else errorToken" class="input-group">
-          <input class="form-control" [(ngModel)]="link" type="text" name="" id="">
+          <input class="form-control" [(ngModel)]="link" type="text" name="" id="" placeholder="Ссылка на страницу">
           <input *ngIf="!load" (click)="parseProfile()" class="btn btn-outline-secondary" type="button" value="Parse">
   
         </div>
